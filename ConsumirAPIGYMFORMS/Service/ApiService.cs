@@ -27,7 +27,16 @@ namespace ConsumirAPIGYMFORMS.Service
             var json = JsonSerializer.Serialize(loginData);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("api/auth/login", content);
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+
+            using var client = new HttpClient(handler);
+
+            // Asegúrate de usar la URL completa
+            var response = await client.PostAsync("https://localhost:5042/api/auth/login", content);
+
             if (response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
@@ -43,18 +52,26 @@ namespace ConsumirAPIGYMFORMS.Service
 
         public async Task<List<Equipo>> GetPokemonsAsync()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
 
-            var response = await _httpClient.GetAsync("api/equipos");
+            using var client = new HttpClient(handler);
+            client.BaseAddress = new Uri("https://localhost:5042/");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+
+            var response = await client.GetAsync("api/equipos");
 
             if (!response.IsSuccessStatusCode)
                 return new List<Equipo>();
 
             var content = await response.Content.ReadAsStringAsync();
-            var equipos = JsonSerializer.Deserialize<List<Equipo>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var pokemons = JsonSerializer.Deserialize<List<Equipo>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            return equipos ?? new List<Equipo>();
+            return pokemons ?? new List<Equipo>();
         }
+
 
     }
 }
