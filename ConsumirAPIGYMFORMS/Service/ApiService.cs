@@ -18,7 +18,7 @@ namespace ConsumirAPIGYMFORMS.Service
         public ApiService()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://localhost:5042");
+            _httpClient.BaseAddress = new Uri("https://10.0.0.148:5042/");
         }
 
         public async Task<bool> LoginAsync(string username, string password)
@@ -35,8 +35,8 @@ namespace ConsumirAPIGYMFORMS.Service
             using var client = new HttpClient(handler);
 
             // Asegúrate de usar la URL completa
-            var response = await client.PostAsync("https://localhost:5042/api/auth/login", content);
-
+            // var response = await client.PostAsync("https://localhost:5042/api/auth/login", content);
+            var response = await client.PostAsync("https://10.0.0.148:5042/api/auth/login", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
@@ -58,10 +58,11 @@ namespace ConsumirAPIGYMFORMS.Service
             };
 
             using var client = new HttpClient(handler);
-            client.BaseAddress = new Uri("https://localhost:5042/");
+            //client.BaseAddress = new Uri("https://localhost:5042/");
+            client.BaseAddress = new Uri("https://10.0.0.148:5042/");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
-            var response = await client.GetAsync("api/equipos");
+            var response = await client.GetAsync("api/v1/pokemons");
 
             if (!response.IsSuccessStatusCode)
                 return new List<Equipo>();
