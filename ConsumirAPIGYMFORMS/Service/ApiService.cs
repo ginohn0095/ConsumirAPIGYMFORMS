@@ -62,7 +62,7 @@ namespace ConsumirAPIGYMFORMS.Service
             client.BaseAddress = new Uri("https://10.0.0.148:5042/");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
-            var response = await client.GetAsync("api/v1/pokemons");
+            var response = await client.GetAsync("api/equipos");
 
             if (!response.IsSuccessStatusCode)
                 return new List<Equipo>();
